@@ -31,7 +31,7 @@ jobs:
       #  run: docker compose exec -T -w /front/front node npm test -- --ci --passWithNoTests
 
       - name: build app
-        run: docker compose exec -T -w /front/front npm run build
+        run: docker compose exec -T -w /front/front node npm run build
 
       - name: stop docker
         if: always()
