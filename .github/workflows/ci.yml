@@ -22,4 +22,12 @@ jobs:
           docker compose version
 
       - name: docker up
-        run: docker compose up
+        run: docker compose up -d
+
+      - name: install dependencies
+        run: docker compose exec -T -w /front node npm ci
+
+
+#  install-next:
+#    needs: build_docker
+#    runs-on: ubuntu-latest
