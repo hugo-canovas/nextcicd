@@ -6,8 +6,6 @@ on:
   push:
     branches:
       - prod
-    branches-ignore:
-      - staging
 
 jobs:
   build_docker:
