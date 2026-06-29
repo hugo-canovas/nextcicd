@@ -9,7 +9,7 @@ RUN npm ci
 
 FROM node:26-alpine3.24 AS builder
 
-WORKDIR /front                          # ← manquait
+WORKDIR /front
 
 COPY --from=deps /front/node_modules ./node_modules
 
