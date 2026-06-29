@@ -25,7 +25,7 @@ jobs:
         run: docker compose up -d
 
       - name: install dependencies
-        run: docker compose exec -T -w /front node npm ci
+        run: docker compose exec -T -w /front/front node npm ci
 
 
 #  install-next:
