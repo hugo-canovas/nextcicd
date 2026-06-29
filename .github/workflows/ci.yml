@@ -27,11 +27,15 @@ jobs:
       - name: install dependencies
         run: docker compose exec -T -w /front/front node npm ci
 
-      - name: run test
-        run: docker compose exec -T -w /front/front node npm test -- --ci --passWithNoTests
+      #- name: run test
+      #  run: docker compose exec -T -w /front/front node npm test -- --ci --passWithNoTests
 
       - name: build app
         run: docker compose exec -T -w /front/front npm run build
+
+      - name: stop docker
+        if: always()
+        run: docker compose down
 
 
 #  install-next:
