@@ -31,6 +31,7 @@ ENV PORT=3000
 COPY --from=deps /front/node_modules ./node_modules
 COPY front/package*.json ./
 
+COPY --from=builder /front/.next/standalone ./
 COPY --from=builder /front/.next ./.next
 COPY --from=builder /front/public ./public
 
