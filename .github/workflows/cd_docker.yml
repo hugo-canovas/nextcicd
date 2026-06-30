@@ -76,7 +76,7 @@ jobs:
           target: "/var/www/httpdocs/app"
 
       - name: generate env
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{secrets.HOST}}
           username: ${{secrets.USER}}
