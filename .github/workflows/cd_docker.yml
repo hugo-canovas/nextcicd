@@ -1,0 +1,99 @@
+name: cd_docker.yml
+on:
+  push:
+#  workflow_run:
+#    workflows:
+#      - CI
+#    types:
+#      - completed
+    branches:
+      - prod
+
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
+env:
+  IMAGE_NAME: ghcr.io/${{github.repository}}
+
+jobs:
+  build-and-push:
+    name: build and push on ghcr
+    runs-on: ubuntu-latest
+
+#    if: ${{github.event.workflow_run.conclusion == 'success'}}
+
+    steps:
+      - name: install checkout
+        uses: actions/checkout@v7
+
+      - name: config docker buildX
+        uses: docker/setup-buildx-action@v4
+
+      - name: connect to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: generate tags & labels
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{env.IMAGE_NAME}}
+          tags: |
+            type=ref,event=branch
+            type=sha, prefix=sha-
+
+      - name: build & push on GHCR
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{steps.meta.outputs.tags}}
+          labels: ${{steps.meta.outputs.labels}}
+          cache-from: type=registry,ref=${{env.IMAGE_NAME}}:cache
+          cache-to: type=registry,ref=${{env.IMAGE_NAME}}:cache,mode=max
+
+  deployed:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v7
+
+      - name: copy docker compose
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USER}}
+          key: ${{secrets.KEY}}
+          source: 'docker-compose.prod.yml'
+          target: "/var/www/httpdocs/app"
+
+      - name: generate env
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USER}}
+          key: ${{secrets.KEY}}
+          script: |
+            cd /var/www/httpdocs/app
+            cat > .env << 'EOF'
+            POSTGRES_DB=${{secrets.PG_DB}}
+            POSTGRES_USER=${{secrets.PG_USER}}
+            POSTGRES_PASSWORD=${{secrets.PG_PSWD}}
+            REDIS_ARG=${{secrets.REDIS_ARG}}
+            EOF
+            
+            echo "$GHCR_TOKEN" | login ghcr.io -u ${{github.actor}} --password-stdin
+            
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml down || true
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
+            docker image prune -f
+            
