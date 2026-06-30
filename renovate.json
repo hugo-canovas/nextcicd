@@ -15,6 +15,10 @@
       "groupName": "Docker images"
     },
     {
+      "matchManagers": ["docker-compose"],
+      "groupName": "Docker compose"
+    },
+    {
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions"
     }
