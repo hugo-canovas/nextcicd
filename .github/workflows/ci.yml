@@ -37,7 +37,16 @@ jobs:
         if: always()
         run: docker compose down
 
+  docker_scout:
+    needs: build_docker
+    runs-on: ubuntu-latest
 
-#  install-next:
-#    needs: build_docker
-#    runs-on: ubuntu-latest
+    steps:
+      - name: docker scout
+        uses: docker/scout-action@v1
+        with:
+          command: cves, recommendations, compare
+          image: postgres:18-alpine3.24
+          to: postgres:latest
+          ignore-unchanged: true
+          only-fixed: true

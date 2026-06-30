@@ -1,0 +1,13 @@
+services:
+  app:
+    container_name: app
+    image: ghcr.io/hugo-canovas/nextcicd:sha-e94c73f
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - myapp
