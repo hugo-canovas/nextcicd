@@ -37,16 +37,16 @@ jobs:
         if: always()
         run: docker compose down
 
-  docker_scout:
+  check_image_docker:
     needs: build_docker
     runs-on: ubuntu-latest
 
     steps:
-      - name: login to docker hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{secrets.DOCKER_USER}}
-          password: ${{secrets.DOCKER_PSW}}
+      #- name: login to docker hub
+      #  uses: docker/login-action@v3
+      #  with:
+      #    username: ${{secrets.DOCKER_USER}}
+      #    password: ${{secrets.DOCKER_PSW}}
 
       #- name: docker scout
       #  uses: docker/scout-action@v1
