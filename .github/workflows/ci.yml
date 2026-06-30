@@ -77,7 +77,7 @@ jobs:
       - name: run renovate
         uses: renovatebot/github-action@v46.1.17
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{secrets.RENOVATE_TOKEN}}
         env:
           LOG_LEVEL: 'debug'
           RENOVATE_REPOSITORIES: ${{github.repository}}
