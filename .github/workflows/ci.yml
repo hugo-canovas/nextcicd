@@ -78,5 +78,6 @@ jobs:
         uses: renovatebot/github-action@v46.1.17
         with:
           token: ${{secrets.GITHUB_TOKEN}}
+          repositories: ${{github.repository}}
         env:
           LOG_LEVEL: 'debug'
